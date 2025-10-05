@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class QuantityUpdateDTO {
     @NotNull
-    @Min(value = 1, message = "Value cannot be smaller than 1")
+    @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity;
 }

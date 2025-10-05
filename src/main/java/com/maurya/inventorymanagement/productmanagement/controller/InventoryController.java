@@ -1,33 +1,53 @@
 package com.maurya.inventorymanagement.productmanagement.controller;
 
+import com.maurya.inventorymanagement.productmanagement.dto.ProductRequestDTO;
+import com.maurya.inventorymanagement.productmanagement.dto.ProductResponseDTO;
 import com.maurya.inventorymanagement.productmanagement.entity.ProductEntity;
 import com.maurya.inventorymanagement.productmanagement.services.InventoryServices;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/inventory")
 public class InventoryController {
+
     @Autowired
     private InventoryServices services;
+
     @PostMapping
-    public boolean createProduct (@RequestBody ProductEntity entity) {
-        services.createProduct(entity);
-        return true;
+    public ResponseEntity<ProductResponseDTO> createProduct(@Valid @RequestBody ProductRequestDTO request) {
+        ProductEntity entity = new ProductEntity();
+        entity.setProductName(request.getProductName());
+        entity.setDescription(request.getDescription());
+        entity.setStockQuantity(request.getStockQuantity());
+
+        ProductResponseDTO response = services.createProduct(entity);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ProductEntity getProductByID (@PathVariable Long id) {
-       return services.getProductByID(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public boolean deleteProduct (@PathVariable Long id) {
-        return services.deleteProductByID(id);
+    public ResponseEntity<ProductEntity> getProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(services.getProductByID(id));
     }
 
     @PutMapping("/{id}")
-    public ProductEntity updateProductByID (@PathVariable Long id, @RequestBody ProductEntity entity) {
-        return services.updateProductByID(id, entity);
+    public ResponseEntity<ProductEntity> updateProduct(@PathVariable Long id,
+                                                       @Valid @RequestBody ProductRequestDTO request) {
+        ProductEntity entity = new ProductEntity();
+        entity.setProductName(request.getProductName());
+        entity.setDescription(request.getDescription());
+        entity.setStockQuantity(request.getStockQuantity());
+
+        return ResponseEntity.ok(services.updateProductByID(id, entity));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        services.deleteProductByID(id);
+        return ResponseEntity.noContent().build();
     }
 }
