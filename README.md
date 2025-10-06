@@ -406,4 +406,4 @@ docker-compose up --build
 ```
 
 
-**Happy Coding! 🚀**
+**Happy Coding! **
