@@ -304,13 +304,6 @@ curl -X DELETE http://localhost:8080/inventory/1
     - Method: DELETE
     - URL: `http://localhost:8080/inventory/1`
 
-### Option 3: Using Swagger UI (Easiest!)
-
-1. Navigate to `http://localhost:8080/swagger-ui.html`
-2. Explore all available endpoints
-3. Click "Try it out" on any endpoint
-4. Fill in the parameters and click "Execute"
-5. View the response directly in the browser
 
 ## Project Structure
 
