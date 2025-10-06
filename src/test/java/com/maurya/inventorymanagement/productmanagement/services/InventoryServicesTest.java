@@ -32,7 +32,9 @@ class InventoryServicesTest {
         product.setProductName("Soap");
         product.setDescription("Test Product");
         product.setStockQuantity(10);
+        product.setThresholdQuantity(5);
     }
+
 
     @Test
     void testCreateProduct_Success() {
@@ -51,7 +53,7 @@ class InventoryServicesTest {
     }
 
     @Test
-    void testCreateProduct_Failure() {
+    void testCreateProduct_SaveFailure() {
         when(repository.save(product)).thenReturn(product);
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
@@ -61,6 +63,22 @@ class InventoryServicesTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getStatusCode());
         assertTrue(ex.getReason().contains("Product not saved"));
     }
+
+    @Test
+    void testCreateProduct_ThresholdCanBeGreaterThanStock() {
+        product.setStockQuantity(5);
+        product.setThresholdQuantity(10);
+
+        when(repository.save(product)).thenReturn(product);
+        when(repository.findById(1L)).thenReturn(Optional.of(product));
+
+        ProductResponseDTO response = service.createProduct(product);
+
+        assertEquals(10, response.getThresholdQuantity());
+        assertEquals("Product created successfully", response.getMessage());
+    }
+
+
 
     @Test
     void testGetProductByID_Success() {
@@ -84,6 +102,8 @@ class InventoryServicesTest {
         assertTrue(ex.getReason().contains("Product not found"));
     }
 
+
+
     @Test
     void testDeleteProductByID_Success() {
         when(repository.findById(1L)).thenReturn(Optional.of(product));
@@ -106,12 +126,14 @@ class InventoryServicesTest {
         assertTrue(ex.getReason().contains("Product not found"));
     }
 
+
     @Test
-    void testUpdateProductByID_AllFields() {
+    void testUpdateProductByID_AllFieldsIncludingThreshold() {
         ProductEntity updated = new ProductEntity();
         updated.setProductName("Updated Soap");
         updated.setDescription("Updated Description");
         updated.setStockQuantity(25);
+        updated.setThresholdQuantity(20);
 
         when(repository.findById(1L)).thenReturn(Optional.of(product));
         when(repository.save(any(ProductEntity.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -121,13 +143,14 @@ class InventoryServicesTest {
         assertEquals("Updated Soap", result.getProductName());
         assertEquals("Updated Description", result.getDescription());
         assertEquals(25, result.getStockQuantity());
+        assertEquals(20, result.getThresholdQuantity());
     }
 
     @Test
     void testUpdateProductByID_PartialUpdate() {
         ProductEntity partial = new ProductEntity();
         partial.setProductName("New Name");
-        partial.setStockQuantity(0);
+        partial.setThresholdQuantity(15);
 
         when(repository.findById(1L)).thenReturn(Optional.of(product));
         when(repository.save(any(ProductEntity.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -137,6 +160,7 @@ class InventoryServicesTest {
         assertEquals("New Name", result.getProductName());
         assertEquals("Test Product", result.getDescription());
         assertEquals(10, result.getStockQuantity());
+        assertEquals(15, result.getThresholdQuantity());
     }
 
     @Test

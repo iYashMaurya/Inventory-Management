@@ -2,6 +2,7 @@ package com.maurya.inventorymanagement.productmanagement.services;
 
 import com.maurya.inventorymanagement.productmanagement.dto.ProductResponseDTO;
 import com.maurya.inventorymanagement.productmanagement.entity.ProductEntity;
+import com.maurya.inventorymanagement.productmanagement.exception.InvalidThresholdException;
 import com.maurya.inventorymanagement.productmanagement.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class InventoryServices {
                 saved.getProductName(),
                 saved.getDescription(),
                 saved.getStockQuantity(),
+                saved.getThresholdQuantity(),
                 "Product created successfully"
         );
     }
@@ -50,6 +52,9 @@ public class InventoryServices {
         }
         if (entity.getStockQuantity() > 0) {
             oldProduct.setStockQuantity(entity.getStockQuantity());
+        }
+        if (entity.getThresholdQuantity() >= 0) {
+            oldProduct.setThresholdQuantity(entity.getThresholdQuantity());
         }
 
         return repository.save(oldProduct);

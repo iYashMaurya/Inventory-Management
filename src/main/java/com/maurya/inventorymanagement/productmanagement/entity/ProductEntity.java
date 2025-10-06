@@ -24,4 +24,8 @@ public class ProductEntity {
     @Min(value = 1, message = "Stock quantity cannot be less than 1")
     @Column(name = "stock_quantity")
     private long stockQuantity;
+
+    @NotNull
+    @Min(value = 0, message = "Threshold value cannot be less than 0")
+    private long thresholdQuantity;
 }

@@ -1,6 +1,7 @@
 package com.maurya.inventorymanagement.productmanagement.controller;
 
 import com.maurya.inventorymanagement.productmanagement.dto.QuantityUpdateDTO;
+import com.maurya.inventorymanagement.productmanagement.entity.ProductEntity;
 import com.maurya.inventorymanagement.productmanagement.services.ProductServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/product")
@@ -45,5 +48,10 @@ public class ProductController {
     public ResponseEntity<String> decreaseQuantity(@PathVariable Long id,
                                                    @Valid @RequestBody QuantityUpdateDTO quantity) {
         return ResponseEntity.ok(services.decreaseStockByID(id, quantity.getQuantity()));
+    }
+
+    @GetMapping("/low-threshold")
+    public ResponseEntity<List<ProductEntity>> lowThresholdValue() {
+        return ResponseEntity.ok(services.lowThreshold());
     }
 }

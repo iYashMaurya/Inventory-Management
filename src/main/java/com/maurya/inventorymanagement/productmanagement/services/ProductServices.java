@@ -1,12 +1,16 @@
 package com.maurya.inventorymanagement.productmanagement.services;
 
 import com.maurya.inventorymanagement.productmanagement.entity.ProductEntity;
+import com.maurya.inventorymanagement.productmanagement.exception.NoLowStockProductException;
 import com.maurya.inventorymanagement.productmanagement.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -37,5 +41,22 @@ public class ProductServices {
         repository.save(entity);
 
         return "Updated product with id: " + id + " with stock quantity: " + entity.getStockQuantity();
+    }
+
+    public List<ProductEntity> lowThreshold() {
+        List<ProductEntity> list = repository.findAll();
+        List<ProductEntity> lowThreshold = new ArrayList<>();
+
+        for (ProductEntity p : list) {
+            if (p.getStockQuantity() <= p.getThresholdQuantity()) {
+                lowThreshold.add(p);
+            }
+        }
+
+        if (lowThreshold.isEmpty()) {
+            throw new NoLowStockProductException("No products found below the threshold value");
+        }
+
+        return lowThreshold;
     }
 }

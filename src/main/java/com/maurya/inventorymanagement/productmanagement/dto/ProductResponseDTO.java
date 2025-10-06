@@ -10,5 +10,6 @@ public class ProductResponseDTO {
     private String productName;
     private String description;
     private Long stockQuantity;
+    private long thresholdQuantity;
     private String message;
 }

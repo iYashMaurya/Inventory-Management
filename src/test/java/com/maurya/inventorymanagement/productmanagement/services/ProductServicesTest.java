@@ -1,6 +1,7 @@
 package com.maurya.inventorymanagement.productmanagement.services;
 
 import com.maurya.inventorymanagement.productmanagement.entity.ProductEntity;
+import com.maurya.inventorymanagement.productmanagement.exception.NoLowStockProductException;
 import com.maurya.inventorymanagement.productmanagement.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,9 @@ import org.mockito.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,5 +96,47 @@ class ProductServicesTest {
 
         assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
         assertTrue(ex.getReason().contains("Product not found"));
+    }
+
+    @Test
+    void testLowThreshold_Success() {
+        ProductEntity product2 = new ProductEntity();
+        product2.setProductId(2L);
+        product2.setProductName("Dettol");
+        product2.setStockQuantity(3);
+        product2.setThresholdQuantity(5);
+
+        when(repository.findAll()).thenReturn(Arrays.asList(product, product2));
+
+        List<ProductEntity> lowStock = service.lowThreshold();
+
+        assertEquals(1, lowStock.size());
+        assertEquals("Dettol", lowStock.get(0).getProductName());
+    }
+
+    @Test
+    void testLowThreshold_NoLowStockProducts() {
+        ProductEntity product2 = new ProductEntity();
+        product2.setProductId(2L);
+        product2.setProductName("Dettol");
+        product2.setStockQuantity(10);
+        product2.setThresholdQuantity(5);
+
+        when(repository.findAll()).thenReturn(Arrays.asList(product, product2));
+
+        NoLowStockProductException ex = assertThrows(NoLowStockProductException.class,
+                () -> service.lowThreshold());
+
+        assertEquals("No products found below the threshold value", ex.getMessage());
+    }
+
+    @Test
+    void testLowThreshold_EmptyRepository() {
+        when(repository.findAll()).thenReturn(Collections.emptyList());
+
+        NoLowStockProductException ex = assertThrows(NoLowStockProductException.class,
+                () -> service.lowThreshold());
+
+        assertEquals("No products found below the threshold value", ex.getMessage());
     }
 }

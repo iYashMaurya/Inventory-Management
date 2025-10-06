@@ -40,7 +40,7 @@ public class InventoryController {
         entity.setProductName(request.getProductName());
         entity.setDescription(request.getDescription());
         entity.setStockQuantity(request.getStockQuantity());
-
+        entity.setThresholdQuantity(request.getThresholdQuantity());
         ProductResponseDTO response = services.createProduct(entity);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -80,6 +80,7 @@ public class InventoryController {
         entity.setProductName(request.getProductName());
         entity.setDescription(request.getDescription());
         entity.setStockQuantity(request.getStockQuantity());
+        entity.setThresholdQuantity(request.getThresholdQuantity());
 
         return ResponseEntity.ok(services.updateProductByID(id, entity));
     }
