@@ -77,7 +77,7 @@ We've all heard this before. Docker eliminates the classic development problem o
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repository-url>
+git clone git@github.com:iYashMaurya/Inventory-Management.git
 cd inventory-management
 ```
 
